@@ -20,35 +20,70 @@ def relative_to_assets(path: str) -> Path:
 
 window = Tk()
 
-window.geometry("189x53")
-window.configure(bg = "#FFFFFF")
+window.geometry("1920x1080")
+window.configure(bg = "#171717")
 
 
 canvas = Canvas(
     window,
-    bg = "#FFFFFF",
-    height = 53,
-    width = 189,
+    bg = "#171717",
+    height = 1080,
+    width = 1920,
     bd = 0,
     highlightthickness = 0,
     relief = "ridge"
 )
 
 canvas.place(x = 0, y = 0)
-canvas.create_rectangle(
-    0.0,
-    0.0,
-    189.0,
-    53.0,
-    fill="#D9D9D9",
-    outline="")
+button_image_1 = PhotoImage(
+    file=relative_to_assets("button_1.png"))
+button_1 = Button(
+    image=button_image_1,
+    borderwidth=0,
+    highlightthickness=0,
+    activebackground="#171717",
+    command=lambda: print("button_1 clicked"),
+    relief="flat"
+)
+button_1.place(
+    x=865.0,
+    y=600.0,
+    width=189.0,
+    height=53.0
+)
 
-canvas.create_rectangle(
-    5.0,
-    5.0,
-    185.0,
-    49.0,
-    fill="#FFFFFF",
-    outline="")
+button_image_2 = PhotoImage(
+    file=relative_to_assets("button_2.png"))
+button_2 = Button(
+    image=button_image_2,
+    borderwidth=0,
+    activebackground="#171717",
+    highlightthickness=0,
+    command=lambda: print("button_2 clicked"),
+    relief="flat"
+)
+button_2.place(
+    x=995.0,
+    y=426.0,
+    width=160.0,
+    height=49.0
+)
+
+button_image_3 = PhotoImage(
+    file=relative_to_assets("button_3.png"))
+button_3 = Button(
+    image=button_image_3,
+    borderwidth=0,
+    activebackground="#171717",
+    highlightthickness=0,
+    command=lambda: print("button_3 clicked"),
+    relief="flat"
+)
+button_3.place(
+    x=764.0,
+    y=426.0,
+    width=160.0,
+    height=49.0
+)
 window.resizable(False, False)
 window.mainloop()
