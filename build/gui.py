@@ -23,8 +23,8 @@ def gitlink():
 window = CTk()
 window.geometry("1920x1080")
 bg1 = "#171717"
+yq = False
 window.configure(bg = bg1)
-
 
 
 canvas = Canvas(
@@ -37,14 +37,6 @@ canvas = Canvas(
     relief = "ridge"
 )
 canvas.place(x = 0, y = 0)
-
-def colorthem2():
-    if checkbox.get():
-        bg1 = "#FFFFFF"
-    else:
-        bg1 = "#171717"
-    canvas.config(bg=bg1)
-
 
 
 def open():
@@ -112,6 +104,19 @@ button_3.place(
     height=49.0
 )
 
+def colorthem2():
+    if checkbox.get():
+        bg1 = "#FFFFFF"
+        yq = True
+    else:
+        bg1 = "#171717"
+        yq = False
+    canvas.config(bg=bg1)
+    if yq == False:
+        checkbox.configure(text_color = "#FFFFFF", bg_color = bg1)
+    else:
+        checkbox.configure(text_color = "#171717", bg_color = bg1)
+
 checkbox = CTkCheckBox(
      master=window,
      text="Switch Theme",
@@ -122,7 +127,7 @@ checkbox = CTkCheckBox(
      checkbox_width=20,
      corner_radius=36,
      command=colorthem2)
-     
+
 
 checkbox.place(
      relx = 0.5, 
