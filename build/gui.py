@@ -4,14 +4,11 @@
 
 
 from pathlib import Path
-
-# from tkinter import *
-# Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
+from tkinter import Canvas, Entry, Text, Button, PhotoImage, filedialog, messagebox
+from customtkinter import *
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -20,11 +17,10 @@ import webbrowser
 def gitlink():
     webbrowser.open("https://github.com/CrackKO/paint")
 
-window = Tk()
+window = CTk()
 
 window.geometry("1920x1080")
-window.configure(bg = "#171717")
-
+set_appearance_mode("#171717")
 
 canvas = Canvas(
     window,
@@ -35,8 +31,25 @@ canvas = Canvas(
     highlightthickness = 0,
     relief = "ridge"
 )
-
 canvas.place(x = 0, y = 0)
+
+def open():
+    file_path = filedialog.askopenfilename(
+        title="Откройте файл .png",
+        filetypes=[("PNG", "*.png")] #Указываем тип файла который выбираем
+    )
+    if file_path:
+        label = CTkLabel(master=window, text=f"Готово", font=("Lexend",20), text_color="#00FF00")
+        label.place(relx = 0.5, rely = 0.4, anchor = "center")
+    else:
+        messagebox.showwarning("Нет файла", "Файл не был выбран") #В случае если ты не выбрал файл то будет эта хуйня
+
+def colorthem():
+      if checkbox.get():
+            set_appearance_mode("#FFFFFF")
+      else:
+            set_appearance_mode("#171717")
+
 button_image_1 = PhotoImage(
     file=relative_to_assets("button_1.png"))
 button_1 = Button(
@@ -78,7 +91,7 @@ button_3 = Button(
     borderwidth=0,
     activebackground="#171717",
     highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
+    command=open,
     relief="flat"
 )
 button_3.place(
@@ -87,5 +100,21 @@ button_3.place(
     width=160.0,
     height=49.0
 )
+
+checkbox = CTkCheckBox(
+     master=window,
+     text="Switch Theme", 
+     fg_color="#C850C0",
+     checkbox_height=20,
+     checkbox_width=20,
+     corner_radius=36,
+     command=colorthem)
+
+checkbox.place(
+     relx = 0.5, 
+     rely = 0.50, 
+     anchor = "center")
+
 window.resizable(False, False)
 window.mainloop()
+
