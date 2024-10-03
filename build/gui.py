@@ -4,11 +4,14 @@
 
 
 from pathlib import Path
-from tkinter import Canvas, Entry, Text, Button, PhotoImage, filedialog, messagebox
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, filedialog, messagebox
 from customtkinter import *
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
+
+# ASSETS_PATH = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
+# ASSETS_PATH = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -18,13 +21,15 @@ def gitlink():
     webbrowser.open("https://github.com/CrackKO/paint")
 
 window = CTk()
-
 window.geometry("1920x1080")
-set_appearance_mode("#171717")
+bg1 = "#171717"
+window.configure(bg = bg1)
+
+
 
 canvas = Canvas(
     window,
-    bg = "#171717",
+    bg = bg1,
     height = 1080,
     width = 1920,
     bd = 0,
@@ -32,6 +37,15 @@ canvas = Canvas(
     relief = "ridge"
 )
 canvas.place(x = 0, y = 0)
+
+def colorthem2():
+    if checkbox.get():
+        bg1 = "#FFFFFF"
+    else:
+        bg1 = "#171717"
+    canvas.config(bg=bg1)
+
+
 
 def open():
     file_path = filedialog.askopenfilename(
@@ -44,11 +58,8 @@ def open():
     else:
         messagebox.showwarning("Нет файла", "Файл не был выбран") #В случае если ты не выбрал файл то будет эта хуйня
 
-def colorthem():
-      if checkbox.get():
-            set_appearance_mode("#FFFFFF")
-      else:
-            set_appearance_mode("#171717")
+
+
 
 button_image_1 = PhotoImage(
     file=relative_to_assets("button_1.png"))
@@ -103,12 +114,15 @@ button_3.place(
 
 checkbox = CTkCheckBox(
      master=window,
-     text="Switch Theme", 
+     text="Switch Theme",
+     text_color = bg1,
+     bg_color = bg1,
      fg_color="#C850C0",
      checkbox_height=20,
      checkbox_width=20,
      corner_radius=36,
-     command=colorthem)
+     command=colorthem2)
+     
 
 checkbox.place(
      relx = 0.5, 
