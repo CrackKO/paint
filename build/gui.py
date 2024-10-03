@@ -16,7 +16,9 @@ ASSETS_PATH = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
-
+import webbrowser
+def gitlink():
+    webbrowser.open("https://github.com/CrackKO/paint")
 
 window = Tk()
 
@@ -42,7 +44,7 @@ button_1 = Button(
     borderwidth=0,
     highlightthickness=0,
     activebackground="#171717",
-    command=lambda: print("button_1 clicked"),
+    command=gitlink,
     relief="flat"
 )
 button_1.place(
