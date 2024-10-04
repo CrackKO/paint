@@ -8,10 +8,9 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, filedialog, mes
 from customtkinter import *
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
 
 # ASSETS_PATH = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
-# ASSETS_PATH = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -50,9 +49,6 @@ def open():
     else:
         messagebox.showwarning("Нет файла", "Файл не был выбран") #В случае если ты не выбрал файл то будет эта хуйня
 
-
-
-
 button_image_1 = PhotoImage(
     file=relative_to_assets("button_1.png"))
 button_1 = Button(
@@ -72,6 +68,7 @@ button_1.place(
 
 button_image_2 = PhotoImage(
     file=relative_to_assets("button_2.png"))
+
 button_2 = Button(
     image=button_image_2,
     borderwidth=0,
@@ -108,10 +105,21 @@ def colorthem2():
     if checkbox.get():
         bg1 = "#FFFFFF"
         yq = True
+        open_button_dark=relative_to_assets("Button1.png")
+        create_button_dark=relative_to_assets("Button2.png")
+        git_button_dark=relative_to_assets("Button3.png")
     else:
         bg1 = "#171717"
         yq = False
+        open_button_dark=relative_to_assets("button_3.png")
+        create_button_dark=relative_to_assets("button_2.png")
+        git_button_dark=relative_to_assets("button_1.png")
+    
     canvas.config(bg=bg1)
+    button_image_3.config(file=open_button_dark)
+    button_image_2.config(file=create_button_dark)
+    button_image_1.config(file=git_button_dark)
+
     if yq == False:
         checkbox.configure(text_color = "#FFFFFF", bg_color = bg1)
     else:
