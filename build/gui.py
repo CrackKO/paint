@@ -61,7 +61,7 @@ button_1 = Button(
     highlightthickness=0,
     activebackground="#171717",
     command=gitlink,
-    relief="flat"
+    relief="flat",
 )
 button_1.place(
     x=865.0,
