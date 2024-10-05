@@ -144,4 +144,4 @@ checkbox.place(
 
 window.resizable(False, False)
 window.mainloop()
-print(False,False)
+
