@@ -12,23 +12,23 @@ from customtkinter import *
 
 OUTPUT_PATH = Path(__file__).parent
 # ASSETS_PATH = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
-ASSETS_PATH = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
+# ASSETS_PATH = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
+ASSETS_PATH = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame1")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 
-window = Tk()
-
-window.geometry("1920x1080")
+window = CTk()
+window.geometry("1600x900")
 window.configure(bg = "#202020")
 
 
 canvas = Canvas(
     window,
     bg = "#202020",
-    height = 1080,
-    width = 1920,
+    height = 900,
+    width = 1600,
     bd = 0,
     highlightthickness = 0,
     relief = "ridge"
@@ -38,8 +38,8 @@ bar = PhotoImage(file=relative_to_assets("da.png"))
 label = Label(window, background="#202020", image=bar)
 label.pack()
 label.place(
-    x=225,
-    y=999,
+    x=100,
+    y=445,
 )
 
 ely_logo_im = PhotoImage(
@@ -54,7 +54,7 @@ ely_logo_btn = Button(
 )
 ely_logo_btn.place(
     x=955.0,
-    y=1005.0,
+    y=450.0,
     width=50.0,
     height=50.0
 )
@@ -75,27 +75,45 @@ eraser_btn = Button(
 )
 eraser_btn.place(
     x=805.0,
-    y=1005.0,
+    y=450.0,
     width=50.0,
     height=50.0
 )
 
-pencil_im = PhotoImage(
-    file=relative_to_assets("2.png"))
-pencil_btn = Button(
+import tkinter as tk
+
+def activate_pencil():
+    global pencil_active
+    pencil_active = True
+
+def deactivate_pencil(event):
+    global pencil_active
+    pencil_active = False
+
+def draw(event):
+    if pencil_active:
+        x, y = event.x, event.y
+        drawing_canvas.create_oval(x, y, x + 2, y + 2, fill="#FFFFFF", outline="#FFFFFF")
+
+drawing_frame = tk.Frame(window, bg="#202020", width=600, height=400)
+drawing_frame.place(x=100, y=100)
+drawing_canvas = tk.Canvas(drawing_frame, bg="#202020", width=600, height=400)
+
+pencil_active = False
+pencil_im = tk.PhotoImage(file=relative_to_assets("2.png"))
+pencil_btn = tk.Button(
     image=pencil_im,
     borderwidth=0,
     highlightthickness=0,
-    bg = "#D9D9D9",
+    bg="#D9D9D9",
     activebackground="#D9D9D9",
     relief="flat",
+    command=activate_pencil,
 )
-pencil_btn.place(
-    x=655.0,
-    y=1005.0,
-    width=50.0,
-    height=50.0
-)
+pencil_btn.place(x=655.0, y=450.0, width=50.0, height=50.0)
+drawing_canvas.bind("<B1-Motion>", draw)
+drawing_canvas.bind("<ButtonRelease-1>", deactivate_pencil)
+
 
 brush_im = PhotoImage(
     file=relative_to_assets("1.png"))
@@ -109,7 +127,7 @@ brush_btn = Button(
 )
 brush_btn.place(
     x=505.0,
-    y=1005.0,
+    y=450.0,
     width=50.0,
     height=50.0
 )
@@ -126,7 +144,7 @@ txt_btn = Button(
 )
 txt_btn.place(
     x=1105.0,
-    y=1005.0,
+    y=450.0,
     width=50.0,
     height=50.0
 )
@@ -143,7 +161,7 @@ shapes_btn = Button(
 )
 shapes_btn.place(
     x=1255.0,
-    y=1005.0,
+    y=450.0,
     width=50.0,
     height=50.0
 )
@@ -160,7 +178,7 @@ filling_btn = Button(
 )
 filling_btn.place(
     x=1405.0,
-    y=1005.0,
+    y=450.0,
     width=50.0,
     height=50.0
 )
