@@ -4,10 +4,10 @@ from customtkinter import *
 import webbrowser
 
 OUTPUT_PATH = Path(__file__).parent
-# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
-# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
-ASSETS_PATH_1 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame0")
-ASSETS_PATH_2 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame1")
+ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
+ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
+# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame0")
+# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame1")
 
 def relative_to_assets_1(path: str) -> Path:
     return ASSETS_PATH_1 / Path(path)
@@ -20,6 +20,7 @@ def gitlink():
 
 def main_window():
     window = CTk()
+    window.attributes("-fullscreen",True)
     window.geometry("1920x1080")
     bg1 = "#171717"
     window.configure(bg=bg1)
@@ -79,7 +80,24 @@ def main_window():
     window.mainloop()
 
 def second_window():
+
+    def start_drawing(event):
+        global last_x, last_y
+        last_x, last_y = event.x, event.y
+
+    def draw(event):
+        global last_x, last_y
+        canvas.create_line(
+            last_x, last_y, event.x, event.y,
+            fill="black",  # Цвет линии
+            width=brush_size,  # Толщина линии
+            capstyle="round"  # Закругленные линии
+        )
+        last_x, last_y = event.x, event.y
+
     window = Tk()
+    window.state('normal')
+    window.attributes("-fullscreen",True)
     window.geometry("1920x1080")
     window.configure(bg="#202020")
 
@@ -92,7 +110,15 @@ def second_window():
         highlightthickness=0,
         relief="ridge"
     )
-
+    canvas.pack(fill="both", expand=True)
+    global last_x, last_y
+    global brush_size
+    brush_size = 5 
+    def select_brush():
+        """Активировать рисование кистью."""
+        canvas.bind("<Button-1>", start_drawing)  # Нажатие кнопки мыши
+        canvas.bind("<B1-Motion>", draw)
+        
     bar = PhotoImage(file=relative_to_assets_2("da.png"))
     label = Label(window, background="#202020", image=bar)
     label.pack()
@@ -105,7 +131,8 @@ def second_window():
         highlightthickness=0,
         bg="#D9D9D9",
         activebackground="#D9D9D9",
-        relief="flat"
+        relief="flat",
+        command=select_brush
     )
     brush_btn.place(x=505.0, y=1005.0, width=50.0, height=50.0)
 
@@ -141,7 +168,13 @@ def second_window():
         relief="flat"
     )
     ely_logo_btn.place(x=955.0, y=1005.0, width=50.0, height=50.0)
+    
 
+    tk_textbox = CTk.CTkTextbox(CTk, activate_scrollbars=False)
+    tk_textbox.grid(row=0, column=0, sticky="nsew")
+    ctk_textbox_scrollbar = CTk.CTkScrollbar(CTk, command=tk_textbox.yview)
+    ctk_textbox_scrollbar.grid(row=0, column=1, sticky="ns")
+    
     txt_im = PhotoImage(file=relative_to_assets_2("5.png"))
     txt_btn = Button(
         image=txt_im,
@@ -177,5 +210,4 @@ def second_window():
 
     window.resizable(False, False)
     window.mainloop()
-
 main_window()
