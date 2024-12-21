@@ -2,15 +2,16 @@ from pathlib import Path
 from tkinter import Tk, Canvas, Button, PhotoImage, filedialog, messagebox, Label
 from customtkinter import *
 import webbrowser
-
+from tkinter import colorchooser
+from tkinter import Scale
 OUTPUT_PATH = Path(__file__).parent
-# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
-# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
+ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
+ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
 # ASSETS_PATH_1 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame0")
 # ASSETS_PATH_2 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame1")
-ASSETS_PATH_1 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
-ASSETS_PATH_2 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
-
+# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
+# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
+brush_color = "black"  # Цвет по умолчанию
 def relative_to_assets_1(path: str) -> Path:
     return ASSETS_PATH_1 / Path(path)
 
@@ -91,14 +92,15 @@ def second_window():
         last_x, last_y = event.x, event.y
 
     def draw_brush(event):
-        global last_x, last_y
+        global last_x, last_y, brush_color
         canvas.create_line(
             last_x, last_y, event.x, event.y,
-            fill="black",  # Цвет линии
+            fill=brush_color,  # Используем выбранный цвет
             width=brush_size,  # Толщина линии
             capstyle="round"  # Закругленные линии
         )
         last_x, last_y = event.x, event.y
+
 
     def start_draw_pencil(event):
             global last_x, last_y
@@ -122,6 +124,34 @@ def second_window():
             x + brush_size//2, y + brush_size//2, 
             fill="#202020", outline="#202020")
         last_x, last_y = x, y
+    def show_slider(tool):
+    
+        global brush_size
+
+        def update_tool_size(value):
+            """Обновить толщину текущего инструмента."""
+            global brush_size
+            brush_size = int(value)
+
+        # Удаление старого ползунка, если он уже есть
+        for widget in window.winfo_children():
+            if isinstance(widget, Scale):
+                widget.destroy()
+
+        # Создание и отображение нового ползунка
+        thickness_slider = Scale(
+            window,
+            from_=1,  # Минимальная толщина
+            to=50,    # Максимальная толщина
+            orient="horizontal",
+            bg="#202020",
+            fg="white",
+            highlightthickness=0,
+            activebackground="#404040",
+            command=update_tool_size
+        )
+        thickness_slider.set(brush_size)
+        thickness_slider.place(x=window.winfo_width() // 2 - 150, y=950, width=300)  # Центрирование по горизонтали
 
     def start_filling(event):
         x, y = event.x, event.y
@@ -170,20 +200,98 @@ def second_window():
     brush_size = 5 
     fill_color = "#FFFFFF"
     def brush():
-        """Активировать рисование кистью."""
-        canvas.bind("<Button-1>", start_draw_brush)  # Нажатие кнопки мыши
+        global brush_color
+        color = colorchooser.askcolor(title="Выберите цвет")[1]
+        brush_color = color if color else "black"
+
+        show_slider("brush")
+
+        canvas.bind("<Button-1>", start_draw_brush)
         canvas.bind("<B1-Motion>", draw_brush)
+
+
+
     
-    def pencil():    
+    def pencil():
+        global brush_color
+        color = colorchooser.askcolor(title="Выберите цвет")[1]
+        brush_color = color if color else "black"
+        show_slider("pencil") 
         canvas.bind("<Button-1>", start_draw_pencil)
         canvas.bind("<B1-Motion>", draw_pencil)
+
    
     def eraser():
+        show_slider("eraser") 
+
         canvas.bind("<Button-1>", start_draw_eraser)
         canvas.bind("<B1-Motion>", draw_eraser)
 
+
     def filling():
         canvas.bind("<Button-3>", start_filling)  # Заливка правой кнопкой мыши
+    def add_text():
+        def start_text_input(event):
+            x, y = event.x, event.y
+
+            # Поле для ввода текста
+            entry = CTkEntry(window, width=200)
+            entry.place(x=x, y=y)
+
+            def place_text(event=None):
+                # Получение текста из Entry
+                text = entry.get()
+                if text:
+                    # Добавление текста на Canvas
+                    text_id = canvas.create_text(x, y, text=text, fill=brush_color, font=("Arial", 16), anchor="nw")
+                    canvas.tag_bind(text_id, "<Button-1>", lambda e, id=text_id: edit_or_delete_text(e, id))
+                entry.destroy()  # Удаление поля ввода
+
+            # Подтверждение ввода текста при нажатии Enter
+            entry.bind("<Return>", place_text)
+            entry.focus()
+
+        def edit_or_delete_text(event, text_id):
+            def delete_text():
+                canvas.delete(text_id)
+                popup.destroy()
+
+            def edit_text():
+                text_coords = canvas.coords(text_id)
+                current_text = canvas.itemcget(text_id, "text")
+                canvas.delete(text_id)
+
+                # Восстановление поля ввода для редактирования
+                entry = CTkEntry(window, width=200)
+                entry.place(x=text_coords[0], y=text_coords[1])
+                entry.insert(0, current_text)
+
+                def place_edited_text(event=None):
+                    new_text = entry.get()
+                    if new_text:
+                        new_text_id = canvas.create_text(
+                            text_coords[0], text_coords[1], text=new_text, fill=brush_color, font=("Arial", 16), anchor="nw"
+                        )
+                        canvas.tag_bind(new_text_id, "<Button-1>", lambda e, id=new_text_id: edit_or_delete_text(e, id))
+                    entry.destroy()
+
+                entry.bind("<Return>", place_edited_text)
+                entry.focus()
+
+            # Создание всплывающего меню для выбора действия
+            popup = CTkToplevel(window)
+            popup.geometry("200x100")
+            popup.title("Действие")
+            popup.configure(bg="#202020")
+
+            delete_btn = CTkButton(popup, text="Удалить", command=delete_text)
+            delete_btn.pack(pady=10)
+
+            edit_btn = CTkButton(popup, text="Редактировать", command=edit_text)
+            edit_btn.pack(pady=10)
+
+        # Связываем действие выбора места для текста
+        canvas.bind("<Button-1>", start_text_input)
 
     bar = PhotoImage(file=relative_to_assets_2("da.png"))
     label = Label(window, background="#202020", image=bar)
@@ -248,6 +356,7 @@ def second_window():
         activebackground="#D9D9D9",
         relief="flat"
     )
+    txt_btn.configure(command=add_text)
     txt_btn.place(x=1105.0, y=1005.0, width=50.0, height=50.0)
 
     shapes_im = PhotoImage(file=relative_to_assets_2("6.png"))
