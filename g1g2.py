@@ -4,10 +4,12 @@ from customtkinter import *
 import webbrowser
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
-ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
+# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
+# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
 # ASSETS_PATH_1 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame0")
 # ASSETS_PATH_2 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame1")
+ASSETS_PATH_1 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
+ASSETS_PATH_2 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
 
 def relative_to_assets_1(path: str) -> Path:
     return ASSETS_PATH_1 / Path(path)
@@ -17,6 +19,9 @@ def relative_to_assets_2(path: str) -> Path:
 
 def gitlink():
     webbrowser.open("https://github.com/CrackKO/paint")
+
+def dslink():
+    webbrowser.open("https://discord.gg/HNuTn6jscR")
 
 def main_window():
     window = CTk()
@@ -81,11 +86,11 @@ def main_window():
 
 def second_window():
 
-    def start_drawing(event):
+    def start_draw_brush(event):
         global last_x, last_y
         last_x, last_y = event.x, event.y
 
-    def draw(event):
+    def draw_brush(event):
         global last_x, last_y
         canvas.create_line(
             last_x, last_y, event.x, event.y,
@@ -94,6 +99,54 @@ def second_window():
             capstyle="round"  # Закругленные линии
         )
         last_x, last_y = event.x, event.y
+
+    def start_draw_pencil(event):
+            global last_x, last_y
+            last_x, last_y = event.x, event.y
+
+    def draw_pencil(event):
+            global last_x, last_y
+            x, y = event.x, event.y
+            canvas.create_line(last_x, last_y, x, y, fill="black", width=brush_size-3)
+            last_x, last_y = x, y
+
+    def start_draw_eraser(event):
+        global last_x, last_y
+        last_x, last_y = event.x, event.y
+
+    def draw_eraser(event):
+        global last_x, last_y
+        x, y = event.x, event.y
+        canvas.create_rectangle(
+            x - brush_size//2, y - brush_size//2, 
+            x + brush_size//2, y + brush_size//2, 
+            fill="#202020", outline="#202020")
+        last_x, last_y = x, y
+
+    def start_filling(event):
+        x, y = event.x, event.y
+        target_color = canvas.gettags(canvas.find_closest(x, y))[0]
+        if target_color != fill_color:
+            flood_filling(x, y, target_color, fill_color)
+
+    def flood_filling(x, y, target_color, replacement_color):
+        # Если цвет области уже совпадает с заменяемым, ничего не делаем
+        if target_color == replacement_color:
+            return
+
+        # Используем стек для хранения пикселей, которые нужно проверить
+        stack = [(x, y)]
+        while stack:
+            x, y = stack.pop()
+            # Проверяем пиксели и заменяем цвет
+            items = canvas.find_overlapping(x, y, x+1, y+1)
+            for item in items:
+                if target_color in canvas.gettags(item):
+                    canvas.itemconfig(item, fill=replacement_color)
+                    canvas.addtag_withtag(replacement_color, item)
+
+                    # Добавляем соседние пиксели в стек
+                    stack.extend([(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
 
     window = Tk()
     window.state('normal')
@@ -111,14 +164,27 @@ def second_window():
         relief="ridge"
     )
     canvas.pack(fill="both", expand=True)
+
     global last_x, last_y
     global brush_size
     brush_size = 5 
-    def select_brush():
+    fill_color = "#FFFFFF"
+    def brush():
         """Активировать рисование кистью."""
-        canvas.bind("<Button-1>", start_drawing)  # Нажатие кнопки мыши
-        canvas.bind("<B1-Motion>", draw)
-        
+        canvas.bind("<Button-1>", start_draw_brush)  # Нажатие кнопки мыши
+        canvas.bind("<B1-Motion>", draw_brush)
+    
+    def pencil():    
+        canvas.bind("<Button-1>", start_draw_pencil)
+        canvas.bind("<B1-Motion>", draw_pencil)
+   
+    def eraser():
+        canvas.bind("<Button-1>", start_draw_eraser)
+        canvas.bind("<B1-Motion>", draw_eraser)
+
+    def filling():
+        canvas.bind("<Button-3>", start_filling)  # Заливка правой кнопкой мыши
+
     bar = PhotoImage(file=relative_to_assets_2("da.png"))
     label = Label(window, background="#202020", image=bar)
     label.pack()
@@ -132,7 +198,7 @@ def second_window():
         bg="#D9D9D9",
         activebackground="#D9D9D9",
         relief="flat",
-        command=select_brush
+        command=brush
     )
     brush_btn.place(x=505.0, y=1005.0, width=50.0, height=50.0)
 
@@ -143,7 +209,8 @@ def second_window():
         highlightthickness=0,
         bg="#D9D9D9",
         activebackground="#D9D9D9",
-        relief="flat"
+        relief="flat",
+        command=pencil
     )
     pencil_btn.place(x=655.0, y=1005.0, width=50.0, height=50.0)
 
@@ -154,7 +221,8 @@ def second_window():
         highlightthickness=0,
         bg="#D9D9D9",
         activebackground="#D9D9D9",
-        relief="flat"
+        relief="flat",
+        command=eraser
     )
     eraser_btn.place(x=805.0, y=1005.0, width=50.0, height=50.0)
 
@@ -164,16 +232,12 @@ def second_window():
         borderwidth=0,
         highlightthickness=0,
         bg="#D9D9D9",
+        command=dslink,
         activebackground="#D9D9D9",
         relief="flat"
     )
     ely_logo_btn.place(x=955.0, y=1005.0, width=50.0, height=50.0)
     
-
-    tk_textbox = CTk.CTkTextbox(CTk, activate_scrollbars=False)
-    tk_textbox.grid(row=0, column=0, sticky="nsew")
-    ctk_textbox_scrollbar = CTk.CTkScrollbar(CTk, command=tk_textbox.yview)
-    ctk_textbox_scrollbar.grid(row=0, column=1, sticky="ns")
     
     txt_im = PhotoImage(file=relative_to_assets_2("5.png"))
     txt_btn = Button(
@@ -204,9 +268,15 @@ def second_window():
         highlightthickness=0,
         bg="#D9D9D9",
         activebackground="#D9D9D9",
-        relief="flat"
+        relief="flat",
+        command=filling
     )
     filling_btn.place(x=1405.0, y=1005.0, width=50.0, height=50.0)
+
+    tk_textbox = CTk.CTkTextbox(CTk, activate_scrollbars=False)
+    tk_textbox.grid(row=0, column=0, sticky="nsew")
+    ctk_textbox_scrollbar = CTk.CTkScrollbar(CTk, command=tk_textbox.yview)
+    ctk_textbox_scrollbar.grid(row=0, column=1, sticky="ns")
 
     window.resizable(False, False)
     window.mainloop()
