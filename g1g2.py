@@ -5,12 +5,12 @@ import webbrowser
 from tkinter import colorchooser
 from tkinter import Scale
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
-ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
+# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
+# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
 # ASSETS_PATH_1 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame0")
 # ASSETS_PATH_2 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame1")
-# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
-# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
+ASSETS_PATH_1 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
+ASSETS_PATH_2 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
 brush_color = "black"  # Цвет по умолчанию
 def relative_to_assets_1(path: str) -> Path:
     return ASSETS_PATH_1 / Path(path)
@@ -109,7 +109,7 @@ def second_window():
     def draw_pencil(event):
             global last_x, last_y
             x, y = event.x, event.y
-            canvas.create_line(last_x, last_y, x, y, fill="black", width=brush_size-3)
+            canvas.create_line(last_x, last_y, x, y, fill=brush_color, width=brush_size-3, capstyle="round")
             last_x, last_y = x, y
 
     def start_draw_eraser(event):
