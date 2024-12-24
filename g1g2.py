@@ -377,19 +377,6 @@ def second_window():
                 draw.text((x, y), text, fill=color)
         image.save(filename)
  
-    button_save = ctk.CTkButton(
-        window,
-        text="Сохранить",
-        command=lambda: save_image(canvas),
-        width=200,
-        height=50,
-        corner_radius=15,
-        fg_color="#4e4e4e", 
-        hover_color="#202020", 
-        text_color="white",
-        font=("Arial", 16, "bold")
-    )
-    button_save.place(x=1405, y=1005)
 
     txt_im = PhotoImage(file=relative_to_assets_2("5.png"))
     txt_btn = Button(
@@ -500,11 +487,22 @@ def second_window():
     )
     shapes_btn.place(x=1255.0, y=1005.0, width=50.0, height=50.0)
 
+    save_img = PhotoImage(file=relative_to_assets_2("save.png"))
+    button_save = Button(
+        image= save_img,
+        borderwidth=0,
+        highlightthickness=0,
+        bg="#D9D9D9",
+        activebackground="#D9D9D9",
+        relief="flat",
+    )
+    button_save.place(x=1405, y=1005, width=50.0, height=50.0)
 
-    tk_textbox = tk.Text(master=CTk)
-    tk_textbox.grid(row=0, column=0, sticky="nsew")
-    ctk_textbox_scrollbar = CTk.CTkScrollbar(CTk, command=tk_textbox.yview)
-    ctk_textbox_scrollbar.grid(row=0, column=1, sticky="ns")
+
+    # tk_textbox = tk.Text(master=CTk)
+    # tk_textbox.grid(row=0, column=0, sticky="nsew")
+    # ctk_textbox_scrollbar = CTk.CTkScrollbar(CTk, command=tk_textbox.yview)
+    # ctk_textbox_scrollbar.grid(row=0, column=1, sticky="ns")
 
     window.resizable(False, False)
     window.mainloop()
