@@ -1,6 +1,7 @@
 from pathlib import Path
 import tkinter as tk
 from tkinter import Tk, Canvas, Button, PhotoImage, filedialog, messagebox, Label, simpledialog
+from PIL import Image, ImageDraw, ImageTk
 from customtkinter import *
 from customtkinter import CTkEntry, CTkButton, CTkToplevel
 from customtkinter import CTkSlider
@@ -13,12 +14,12 @@ import random
 from PIL import Image, ImageDraw
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
-ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
+# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
+# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
 # ASSETS_PATH_1 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame0")
 # ASSETS_PATH_2 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame1")
-# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
-# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
+ASSETS_PATH_1 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
+ASSETS_PATH_2 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
 brush_color = "black"  # Цвет по умолчанию
 def relative_to_assets_1(path: str) -> Path:
     return ASSETS_PATH_1 / Path(path)
@@ -164,28 +165,6 @@ def second_window():
         )
         thickness_slider.place(x=window.winfo_width() // 2 - 150, y=950)
 
-    def start_filling(event):
-        x, y = event.x, event.y
-        target_color = canvas.gettags(canvas.find_closest(x, y))[0]
-        if target_color != fill_color:
-            flood_filling(x, y, target_color, fill_color)
-
-    def flood_filling(x, y, target_color, replacement_color):
-        # Если цвет области уже совпадает с заменяемым, ничего не делаем
-        if target_color == replacement_color:
-            return
-
-        stack = [(x, y)]
-        while stack:
-            x, y = stack.pop()
-            items = canvas.find_overlapping(x, y, x+1, y+1)
-            for item in items:
-                if target_color in canvas.gettags(item):
-                    canvas.itemconfig(item, fill=replacement_color)
-                    canvas.addtag_withtag(replacement_color, item)
-
-                    stack.extend([(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
-
     window = Tk()
     window.state('normal')
     window.attributes("-fullscreen",True)
@@ -209,7 +188,7 @@ def second_window():
 
     def update_brush_color(color):
         global brush_color
-        brush_color = color
+        brush_color = color 
 
     def choose_brush_color():
         color_picker = CTkColorPicker(window, width=200, height=50, command=update_brush_color)
@@ -232,10 +211,6 @@ def second_window():
 
         canvas.bind("<Button-1>", start_draw_eraser)
         canvas.bind("<B1-Motion>", draw_eraser)
-
-
-    def filling():
-        canvas.bind("<Button-3>", start_filling)
 
     def add_text():
         def start_text_input(event):
@@ -410,11 +385,11 @@ def second_window():
         height=50,
         corner_radius=15,
         fg_color="#4e4e4e", 
-        hover_color="#616161", 
+        hover_color="#202020", 
         text_color="white",
         font=("Arial", 16, "bold")
     )
-    button_save.place(x=1700, y=1005)
+    button_save.place(x=1405, y=1005)
 
     txt_im = PhotoImage(file=relative_to_assets_2("5.png"))
     txt_btn = Button(
@@ -484,8 +459,23 @@ def second_window():
         # Перемещение фигуры
         def on_drag(event):
             coords = canvas.coords(item)
-            x1, y1, x2, y2 = coords
-            canvas.coords(item, event.x - (x2 - x1) / 2, event.y - (y2 - y1) / 2, event.x + (x2 - x1) / 2, event.y + (y2 - y1) / 2)
+            if len(coords) == 4:
+                x1, y1, x2, y2= coords
+                canvas.coords(item, 
+                              event.x - (x2 - x1) / 2, 
+                              event.y - (y2 - y1) / 2, 
+                              event.x + (x2 - x1) / 2, 
+                              event.y + (y2 - y1) / 2)
+            if len(coords) == 6:
+                x1, y1, x2, y2, x3, y3 = coords
+                canvas.coords(item, 
+                              x1 + (event.x - ((x1 + x2 + x3) / 3)), 
+                              y1 + (event.y - ((y1 + y2 + y3) / 3)), 
+                              x2 + (event.x - ((x1 + x2 + x3) / 3)), 
+                              y2 + (event.y - ((y1 + y2 + y3) / 3)), 
+                              x3 + (event.x - ((x1 + x2 + x3) / 3)), 
+                              y3 + (event.y - ((y1 + y2 + y3) / 3)))
+
 
         # Привязываем обработчик для перетаскивания
         canvas.tag_bind(item, "<Button-1>", lambda event: canvas.bind("<B1-Motion>", on_drag))
@@ -510,17 +500,6 @@ def second_window():
     )
     shapes_btn.place(x=1255.0, y=1005.0, width=50.0, height=50.0)
 
-    filling_im = PhotoImage(file=relative_to_assets_2("7.png"))
-    filling_btn = Button(
-        image=filling_im,
-        borderwidth=0,
-        highlightthickness=0,
-        bg="#D9D9D9",
-        activebackground="#D9D9D9",
-        relief="flat",
-        command=filling
-    )
-    filling_btn.place(x=1405.0, y=1005.0, width=50.0, height=50.0)
 
     tk_textbox = tk.Text(master=CTk)
     tk_textbox.grid(row=0, column=0, sticky="nsew")
