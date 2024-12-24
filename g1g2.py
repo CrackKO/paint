@@ -488,15 +488,16 @@ def second_window():
     shapes_btn.place(x=1255.0, y=1005.0, width=50.0, height=50.0)
 
     save_img = PhotoImage(file=relative_to_assets_2("save.png"))
-    button_save = Button(
-        image= save_img,
+    save_btn = Button(
+        image=save_img,
         borderwidth=0,
         highlightthickness=0,
         bg="#D9D9D9",
         activebackground="#D9D9D9",
         relief="flat",
-    )
-    button_save.place(x=1405, y=1005, width=50.0, height=50.0)
+        command=lambda: save_image(canvas)
+    ) 
+    save_btn.place(x=1405.0, y=1007.0)
 
 
     # tk_textbox = tk.Text(master=CTk)
