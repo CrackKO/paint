@@ -12,20 +12,23 @@ from tkinter import colorchooser, Toplevel
 from tkinter import Scale
 import random
 from PIL import Image, ImageDraw
+import os
+import sys
+from pathlib import Path
+def resource_path(relative_path: str) -> Path:
+    if hasattr(sys, '_MEIPASS'):
+        return Path(sys._MEIPASS) / Path(relative_path)
+    return Path(__file__).parent / Path(relative_path)
 
-OUTPUT_PATH = Path(__file__).parent
-# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"F:\paint\build\assets\frame0")
-# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"F:\paint\build2\assets\frame1")
-# ASSETS_PATH_1 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame0")
-# ASSETS_PATH_2 = OUTPUT_PATH / Path(r"D:\arigato\paint\build2\assets\frame1")
-ASSETS_PATH_1 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build\assets\frame0")
-ASSETS_PATH_2 = OUTPUT_PATH / Path(r"C:\ilyxa_paint\paint\build2\assets\frame1")
-brush_color = "black"  # Цвет по умолчанию
+ASSETS_PATH_1 = resource_path("assets")
+ASSETS_PATH_2 = resource_path("assets2")
+
+# Функции для получения файлов в папках
 def relative_to_assets_1(path: str) -> Path:
     return ASSETS_PATH_1 / Path(path)
-
 def relative_to_assets_2(path: str) -> Path:
     return ASSETS_PATH_2 / Path(path)
+brush_color = "black"
 
 def gitlink():
     webbrowser.open("https://github.com/CrackKO/paint")
